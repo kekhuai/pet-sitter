@@ -3,8 +3,6 @@ package com.ps.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
@@ -16,8 +14,6 @@ import java.util.Properties;
  */
 @Configuration
 public class DataSourceConfig1 {
-
-    //TODO 13. Replace where possible all Spring annotations with JSR
 
     @Bean
     public Properties dbProps(){

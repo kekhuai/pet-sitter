@@ -1,12 +1,14 @@
 package com.ps;
 
 import com.ps.config.DataSourceConfig;
+import com.ps.config.DataSourceConfig1;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import static org.junit.Assert.assertNotNull;
@@ -15,10 +17,10 @@ import static org.junit.Assert.assertNotNull;
  * Created by iuliana.cosmina on 3/31/16.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {DataSourceConfig.class})
+@ContextConfiguration(classes = {DataSourceConfig1.class})
 public class BootStrapInjectionTest {
 
-    @Autowired
+    @Inject
     DataSource dataSource;
 
     @Test

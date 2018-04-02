@@ -9,16 +9,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.util.Set;
+
+import static org.junit.Assert.*;
 
 /**
  * Created by iuliana.cosmina on 6/4/16.
@@ -26,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestDataConfig.class, AppConfig.class})
 @ActiveProfiles("dev")
-// TODO 30. [BONUS] Write test methods to cover all methods in JdbcNamedTemplateUserRepo
 public class TestNamedJdbcTemplateUserRepo {
 
     @Autowired
@@ -47,7 +44,41 @@ public class TestNamedJdbcTemplateUserRepo {
     @Test
     public void testNoFindById() {
         User user = userRepo.findById(99L);
-        assertEquals("John", user.getUsername());
+        assertNull(user);
+    }
+
+    @Test
+    public void testCount(){
+        int result = userRepo.countUsers();
+        assertEquals(4, result);
+    }
+
+    @Test
+    public void testCreate(){
+        int result  = userRepo.createUser(5L, "Diana", "mypass", "diana@opympus.com");
+        assertEquals(1, result);
+        Set<User> dianas = userRepo.findAllByUserName("Diana", true);
+        assertTrue(dianas.size() == 1);
+    }
+
+    @Test
+    public void testUpdate(){
+        int result  = userRepo.updatePassword(1L, "newpass");
+        assertEquals(1, result);
+    }
+
+    @Test
+    public void testDelete(){
+        int result  = userRepo.deleteById(4L);
+        assertEquals(1, result);
+    }
+
+    @Test
+    @Sql(statements = {"drop table NEW_P_USER if exists;"})
+    public void testCreateTable(){
+        int result  = userRepo.createTable("new_p_user");
+        // table exists but is empty
+        assertEquals(0, result);
     }
     
 }

@@ -6,6 +6,7 @@ import com.ps.repos.util.UserRowMapper;
 import com.ps.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -69,7 +70,11 @@ public class JdbcTemplateUserRepo implements UserRepo {
     @Override
     public User findById(Long id) {
         String sql = "select id, email, username,password from p_user where id= ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override

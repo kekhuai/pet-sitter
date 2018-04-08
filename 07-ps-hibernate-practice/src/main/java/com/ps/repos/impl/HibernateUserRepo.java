@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -36,42 +37,49 @@ public class HibernateUserRepo implements UserRepo {
         return sessionFactory.getCurrentSession();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<User> findAll() {
         return session().createQuery("from User u").list();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public User findById(Long id) {
         return session().get(User.class, id);
     }
 
+    @Transactional
     @Override
     public void save(User user) {
         session().persist(user);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<User> findAllByUserName(String username, boolean exactMatch) {
         if (exactMatch) {
-            return new ArrayList<>();  // TODO 36. Add Hibernate query to extract wll users with username = :username
+            return session().createQuery("from User u where u.username = :username").setParameter("username", username).list();
         } else {
             return session().createQuery("from User u where username like ?")
                     .setParameter(0, "%" + username + "%").list();
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public String findUsernameById(Long id) {
         return (String) session().createQuery("select u.username from User u where u.id= :id").
                 setParameter("id", id).uniqueResult();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public long countUsers() {
-        return 0L; // TODO 37. Add query to count all users
+        return session().createQuery("select u from User u").list().size();
     }
 
+    @Transactional
     @Override
     public void updatePassword(Long userId, String newPass) {
         User user = (User) session().createQuery("from User u where u.id= :id").
@@ -80,6 +88,7 @@ public class HibernateUserRepo implements UserRepo {
         session().update(user);
     }
 
+    @Transactional
     @Override
     public void updateUsername(Long userId, String username) {
         User user = (User) session().createQuery("from User u where u.id= :id").
@@ -88,11 +97,13 @@ public class HibernateUserRepo implements UserRepo {
         session().update(user);
     }
 
+    @Transactional
     @Override
     public void deleteById(Long userId) {
-        // TODO 38. Add code to delete an user by its id.
+        session().createQuery("from User u where u.id = :userId").setParameter("userId", userId).uniqueResultOptional().ifPresent(user -> session().delete(user));
     }
 
+    @Transactional
     @Override
     public void save(Set<User> users) {
         for (User user : users) {
